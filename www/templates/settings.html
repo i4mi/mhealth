@@ -1,0 +1,40 @@
+<ion-view title="Settings">
+    <ion-content overflow-scroll="false" padding="false" class="has-header">
+    	<ion-list>
+    		<ion-item class="item-divider">
+    			MIDATA
+    		</ion-item>
+    		<i4mi-midata-login user="user" controller-name="I4MIMidataLoginController"></i4mi-midata-login>
+		    <ion-item class="item-divider">
+		    	HealthKit
+		    </ion-item>
+		    <ion-item class="item-toggle">
+	        	Sync to MIDATA
+	        	<label class="toggle">
+	        		<input type="checkbox">
+	        		<div class="track">
+	             		<div class="handle"></div>
+	        		</div>
+	        	</label>
+			</ion-item>
+			<ion-item>
+				Sync Record Types
+				<span class="item-note">
+				  Weight
+				</span>
+			</ion-item>
+			<ion-item class="item-input item-select">
+			   <div class="input-label">
+			     Sync Interval
+			   </div>
+			   <select>
+			     <option>Instantaneously</option>
+			     <option selected>5 Minutes</option>
+			     <option>15 Minutes</option>
+			     <option>1 Hour</option>
+			     <option>1 Day</option>
+			   </select>
+			</ion-item>
+	    </ion-list>
+    </ion-content>
+</ion-view>

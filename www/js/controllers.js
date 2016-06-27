@@ -1,56 +1,95 @@
-angular.module('starter.controllers', [])
-
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
+angular.module('app.controllers', [])
+  
+.controller('menuCtrl', function($scope, I4MIMidataService, I4MIHealthKitService, I4MIDefaultsService) {
+	$scope.openLogin = function() {
+		I4MIMidataService.login();
+	}
+	
+	$scope.openImport = function() {
+		I4MIHealthKitService.doWhenAvailable(function(){
+			I4MIHealthKitService.import([
+				
+			]/*,{ options... }*/);
+		},function(message){console.warn(message)});
+	}
+	
+	var entry = {};
+	
+	var fields = [
+		{
+			key: 'weight',
+			type: 'input',
+			templateOptions: {
+				type: 'number',
+				label: 'Weight [kg]',
+				placeholder: 80
+			}
+		}
+	]
+	
+	var scheme = {
+		weight: {
+			$scheme: I4MIDefaultsService.get('I4MISchemes.weight.midata'),
+			$set: "data.valueQuantity.value"
+		}
+	}
+	
+	$scope.newEntry = function() {
+		I4MIMidataService.newEntry(entry, fields, scheme, {/* options */});
+	}
 })
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
+.controller('settingsCtrl', function($scope, I4MIMidataService, I4MIHealthKitService, I4MIDefaultsService, I4MIMappingService) {
+	
+	$scope.user = {
+		server: 'https://test.midata.coop:9000'
+	}
+	
+	$scope.loggedIn = I4MIMidataService.loggedIn();
+	
+	//$scope.syncActive = I4MIHealthKitService.syncActive();
+})
+   
+.controller('midataChartCtrl', function($scope, I4MIMidataService) {
+	
+	$scope.openCharts = function() {
+		if ( navigator && navigator.app ) {
+			navigator.app.loadUrl('http://krispo.github.io/angular-nvd3', { openExternal:true });
+			console.log('http://krispo.github.io/angular-nvd3');
+		} else {
+			window.open('http://krispo.github.io/angular-nvd3','_system');
+		}
+	}
+	
+	if ( I4MIMidataService.loggedIn() ) {
+		I4MIMidataService.search().then(function(response){
+			$scope.records = response.data;
+		},function(reason){
+			
+		});
+	} else {
+		I4MIMidataService.login();
+	}
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('midataListCtrl', function($scope, I4MIMidataService) {
+	
+	if ( I4MIMidataService.loggedIn() ) {
+		I4MIMidataService.search().then(function(response){
+			$scope.records = response.data;
+		},function(reason){
+			
+		});
+	} else {
+		I4MIMidataService.login();
+	}
+})
+
+.controller('healthkitCtrl', function($scope, I4MIMidataService) {
+	
+})
+
+.controller('cdaCtrl', function($scope) {
+	
 });
+    

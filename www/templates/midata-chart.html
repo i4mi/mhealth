@@ -1,0 +1,13 @@
+<ion-view title="Chart">
+    <ion-content overflow-scroll="true" padding="true" class="has-header">
+    	
+    	<i4mi-chart controller-name="I4MIMidataChartController" records="records" interval="minute" type="scatterChart"></i4mi-chart>
+    	
+    	<i4mi-chart controller-name="I4MIMidataChartController" records="records" interval="day" operation="avg" type="lineChart"></i4mi-chart>
+    	
+    	<i4mi-chart controller-name="I4MIMidataChartController" records="records" interval="day" operation="sum" type="discreteBarChart"></i4mi-chart>
+    	
+    	<button ng-click="openCharts()" class="button button-full button-positive">more on charts</button>
+    	
+    </ion-content>
+</ion-view>

@@ -6,6 +6,7 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var del = require('del');
 
 var paths = {
   sass: ['./scss/**/*.scss']
@@ -48,4 +49,20 @@ gulp.task('git-check', function(done) {
     process.exit(1);
   }
   done();
+});
+
+gulp.task('i4mi-watch', function(done) {
+	gulp.watch(['../ionic-i4mi/dist/i4mi.bundle.min.js'], ['i4mi']);
+});
+gulp.task('i4mi-emulate', function(done) {
+	del(['./www/lib/ionic-i4mi/dist/i4mi.bundle.min.js']);
+	gulp.src(['../ionic-i4mi/dist/i4mi.bundle.min.js'])
+	  .pipe(gulp.dest("./www/lib/ionic-i4mi/dist/"));
+	sh.exec('ionic emulate ios');
+});
+gulp.task('i4mi', function(done) {
+	del(['./www/lib/ionic-i4mi/dist/i4mi.bundle.min.js']);
+	gulp.src(['../ionic-i4mi/dist/i4mi.bundle.min.js'])
+	  .pipe(gulp.dest("./www/lib/ionic-i4mi/dist/"))
+	  .on('end', done);
 });
