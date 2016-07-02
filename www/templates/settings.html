@@ -8,33 +8,22 @@
 		    <ion-item class="item-divider">
 		    	HealthKit
 		    </ion-item>
-		    <ion-item class="item-toggle">
-	        	Sync to MIDATA
-	        	<label class="toggle">
-	        		<input type="checkbox">
-	        		<div class="track">
-	             		<div class="handle"></div>
-	        		</div>
-	        	</label>
-			</ion-item>
-			<ion-item>
-				Sync Record Types
-				<span class="item-note">
-				  Weight
-				</span>
-			</ion-item>
-			<ion-item class="item-input item-select">
-			   <div class="input-label">
-			     Sync Interval
-			   </div>
-			   <select>
-			     <option>Instantaneously</option>
-			     <option selected>5 Minutes</option>
-			     <option>15 Minutes</option>
-			     <option>1 Hour</option>
-			     <option>1 Day</option>
-			   </select>
-			</ion-item>
+		    <ion-toggle ng-model="sync.active" toggle-class="toggle-positive" ng-change="toggleSync()">Sync Weight Records</ion-toggle>
+		    <label class="item item-input item-select">
+		    	<div class="input-label">Sync Interval</div>
+		        <select ng-change="toggleSync()" ng-model="sync.interval">
+		            <option value="" disabled>Choose Interval</option>
+		            <option value="10000">10 s</option>
+			        <option value="60000">1 min</option>
+			        <option value="300000">5 min</option>
+			        <option value="1800000">30 min</option>
+			        <option value="-1">on open</option>
+		        </select>
+		    </label>
+		    <ion-item>
+		    	Synced: {{ sync.last | date:'dd MMMM yyyy HH:mm:ss' }}
+		    </ion-item>
+		    <button class="button button-full button-energized" ng-click="resetSync()">Reset Last Sync Date</button>
 	    </ion-list>
     </ion-content>
 </ion-view>

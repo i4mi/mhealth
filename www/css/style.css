@@ -1,1 +1,48 @@
 /* Empty. Add your own CSS if you like */
+
+/* fix ios header issue */
+
+.platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) > *
+{
+  margin-top: 0px !important;
+  padding-top: 20px !important;
+  height: 54px;
+}
+
+.bar-header.bar-dark {
+	background-color: rgb(106, 125, 144);
+}
+.bar-header.bar-dark .title {
+	color: rgba(254, 200, 46, 0);
+}
+
+.item.borderless {
+	border-top-style: solid;
+	border-top-width: 2px;
+	border-top-color: rgb(254,200,46);
+	border-bottom: none;
+}
+.item.center {
+	text-align: center;
+}
+
+.bfh {
+	background-color: rgb(106, 125, 144);
+	color: rgba(255, 255, 255, 0.5);
+}
+
+button.button-positive {
+	background-color: rgb(83, 129, 174) !important;
+}
+button.button-energized {
+	background-color: rgb(245, 188, 26) !important;
+}
+
+.toggle.toggle-positive input:checked + .track {
+	border-color: rgb(83, 129, 174) !important;
+	background-color: rgb(83, 129, 174) !important;
+}
+.toggle.toggle-energized input:checked + .track {
+	border-color: rgb(245, 188, 26) !important;
+	background-color: rgb(245, 188, 26) !important;
+}

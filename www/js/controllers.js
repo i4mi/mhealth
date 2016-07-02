@@ -1,20 +1,7 @@
 angular.module('app.controllers', [])
   
 .controller('menuCtrl', function($scope, I4MIMidataService, I4MIHealthKitService, I4MIDefaultsService) {
-	$scope.openLogin = function() {
-		I4MIMidataService.login();
-	}
-	
-	$scope.openImport = function() {
-		I4MIHealthKitService.doWhenAvailable(function(){
-			I4MIHealthKitService.import([
-				
-			]/*,{ options... }*/);
-		},function(message){console.warn(message)});
-	}
-	
 	var entry = {};
-	
 	var fields = [
 		{
 			key: 'weight',
@@ -26,36 +13,82 @@ angular.module('app.controllers', [])
 			}
 		}
 	]
-	
 	var scheme = {
 		weight: {
 			$scheme: I4MIDefaultsService.get('I4MISchemes.weight.midata'),
 			$set: "data.valueQuantity.value"
 		}
 	}
-	
 	$scope.newEntry = function() {
 		I4MIMidataService.newEntry(entry, fields, scheme, {/* options */});
 	}
 })
 
-.controller('settingsCtrl', function($scope, I4MIMidataService, I4MIHealthKitService, I4MIDefaultsService, I4MIMappingService) {
-	
+.controller('settingsCtrl', function($scope, I4MIMidataService, I4MIHealthKitService, I4MISettingsService, I4MIDefaultsService, I4MIMappingService) {
 	$scope.user = {
 		server: 'https://test.midata.coop:9000'
 	}
-	
 	$scope.loggedIn = I4MIMidataService.loggedIn();
 	
-	//$scope.syncActive = I4MIHealthKitService.syncActive();
+	var check = function() {
+		if ( I4MIHealthKitService.available() ) {
+			var now = new Date();
+			var last = new Date($scope.sync.last);
+			I4MIHealthKitService.querySampleType({
+				'startDate': last,
+				'endDate': now,
+				'sampleType': 'HKQuantityTypeIdentifierBodyMass',
+				'unit': 'kg'
+		    }).then(function(records){
+		    	$scope.sync.last = now;
+		    	I4MISettingsService.set('sync',$scope.sync);
+		    	var mrecords = I4MIMappingService.map("healthkit","midata",records);
+		    	I4MIMidataService.add(mrecords);
+    		},function(){});
+    	}
+	}
+	var setup = function() {
+		if ( $scope.sync.active ) {
+			check();
+			if ( $scope.sync.interval !== '-1' ) {
+				if ( typeof $scope.sync.ref !== 'undefined' ) {
+					window.clearInterval($scope.sync.ref);
+				}
+				$scope.sync.ref = window.setInterval(function(){
+					check();
+				}, $scope.sync.interval*1);
+			}
+		} else {
+			if ( typeof $scope.sync.ref !== 'undefined' ) {
+				window.clearInterval($scope.sync.ref);
+			}
+		}
+	}
+	
+	$scope.sync = I4MISettingsService.get('sync');
+	if ( typeof $scope.sync.interval === 'undefined' ) {
+		$scope.sync.interval = "60000";
+	}
+	if ( typeof $scope.sync.last === 'undefined' ) {
+		$scope.sync.last = new Date("2007");
+	}
+	setup();
+	
+	$scope.toggleSync = function(){
+		I4MISettingsService.set('sync',$scope.sync);
+		setup();
+	}
+	$scope.resetSync = function() {
+		$scope.sync.last = new Date("2007");
+		I4MISettingsService.set('sync',$scope.sync);
+		setup();
+	}
 })
    
 .controller('midataChartCtrl', function($scope, I4MIMidataService) {
-	
 	$scope.openCharts = function() {
 		if ( navigator && navigator.app ) {
 			navigator.app.loadUrl('http://krispo.github.io/angular-nvd3', { openExternal:true });
-			console.log('http://krispo.github.io/angular-nvd3');
 		} else {
 			window.open('http://krispo.github.io/angular-nvd3','_system');
 		}
@@ -85,11 +118,20 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('healthkitCtrl', function($scope, I4MIMidataService) {
-	
+.controller('healthkitCtrl', function($scope, I4MIMidataService, I4MIHealthKitService) {
+	$scope.update = function(data) {
+		/* do something with the healthkit data */
+	}
 })
 
-.controller('cdaCtrl', function($scope) {
-	
+.controller('ccdaCtrl', function($scope) {
+	$scope.url = "https://raw.githubusercontent.com/chb/sample_ccdas/master/HL7%20Samples/CCD.sample.xml";
+	$scope.record;
+	$scope.callback = function(record) {
+		// do something
+	}
+	$scope.action = function(record) {
+		record = null;
+	}
 });
     
